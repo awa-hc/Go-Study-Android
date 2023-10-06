@@ -8,10 +8,11 @@
 import SwiftUI
 
 @main
+
 struct GoStudyApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            StartPageView() 
         }
     }
 }

@@ -1,0 +1,46 @@
+basePath: /
+definitions:
+  handlers.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  handlers.LoginData:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: service api for gostudy using gin
+  title: tag Service Api
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: checks data in db and return
+      parameters:
+      - description: Datos del inicio de sesión
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.LoginData'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.LoginData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Login Function
+      tags:
+      - Users
+swagger: "2.0"

@@ -2,13 +2,28 @@ package main
 
 import (
 	"github.com/awa-hc/backend/api/handlers"
+	_ "github.com/awa-hc/backend/docs"
 	"github.com/awa-hc/backend/initializers/database"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title tag Service Api
+// @version 1.0
+// @description service api for gostudy using gin
+
+// @host localhost:8080
+// @BasePath /
 func main() {
 	database.ConnectToDB()
 	route := gin.Default()
+
+	// Add swagger
+	route.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	route.POST("/login", handlers.Login)
+
 	userRouter := route.Group("/user")
 	{
 		userRouter.POST("/", handlers.CreateUser)
