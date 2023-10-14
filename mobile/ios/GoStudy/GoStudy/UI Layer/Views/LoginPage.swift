@@ -7,9 +7,14 @@
 
 import SwiftUI
 
+struct ResponseModel: Decodable {
+    let token: String?
+    
+}
 struct LoginPageView: View {
-    @State private var username = ""
+    @State private var email = ""
     @State private var password = ""
+    @State private var jwtToken = ""
     
     var body: some View {
         
@@ -18,7 +23,7 @@ struct LoginPageView: View {
                 .font(.largeTitle)
                 .padding()
             
-            TextField("Nombre de Usuario", text: $username)
+            TextField("Nombre de Usuario", text: $email)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
             
@@ -26,12 +31,14 @@ struct LoginPageView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
             
-            Button(action: {}) {
+            Button(action: {
+            login()
+            }) {
                 Text("Iniciar Sesión")
                     .font(.title)
                     .padding()
                     .foregroundColor(.white)
-                    .background(Color.blue)
+                    .background(Color.orange)
                     .cornerRadius(10)
             }
             
@@ -41,6 +48,40 @@ struct LoginPageView: View {
         .navigationBarTitle("Inicio de sesion", displayMode: .inline)
         .padding()
     }
+    
+    
+    func login() {
+        let url = URL(string: "http://localhost:8080/auth/login")
+        guard let url = url else {return}
+        
+        let credentials: [String: Any] = [
+            "email": email,
+            "password": password
+        ]
+        
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: credentials)
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.httpBody = jsonData
+            request.setValue("application/json", forHTTPHeaderField: "Content-type")
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data {
+                    if let responseModel = try? JSONDecoder().decode(ResponseModel.self, from: data) {
+                        if let token = responseModel.token {
+                            jwtToken = jwtToken
+                            UserDefaults.standard.set(token, forKey: "jwtToken")
+                        }
+            }}}
+            task.resume()
+        } catch {
+            print("error al crear los datos json")
+        }
+
+        
+    }
+    
+    
 }
 
 struct CustomBackButton: View {
@@ -63,4 +104,5 @@ struct LoginView_Previews: PreviewProvider {
         LoginPageView()
     }
 }
+
 
