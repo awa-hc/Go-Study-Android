@@ -3,7 +3,6 @@ package database
 import (
 	"os"
 
-	"github.com/awa-hc/backend/initializers/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -17,5 +16,5 @@ func ConnectToDB() {
 	if err != nil {
 		panic("Could not connect to the database")
 	}
-	DB.AutoMigrate(&models.Comments{}, &models.TaskProject{}, &models.Reminders{}, &models.TaskProject{}, &models.TaskReminders{}, &models.Tasks{}, &models.UserProject{}, &models.Users{})
+	// DB.AutoMigrate(&models.Comments{}, &models.TaskProject{}, &models.Reminders{}, &models.TaskProject{}, &models.TaskReminders{}, &models.Tasks{}, &models.UserProject{}, &models.Users{})
 }

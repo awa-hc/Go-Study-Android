@@ -36,10 +36,9 @@ func RequireAuth(c *gin.Context) {
 		if user.ID == 0 {
 			c.AbortWithStatus(http.StatusUnauthorized)
 		}
-		c.Set("user", user)
 
+		c.Set("user", user)
 		c.Next()
-		fmt.Println(claims["foo"], claims["nbf"])
 	} else {
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}

@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -22,27 +21,29 @@ func SignUp(c *gin.Context) {
 		ImgProfile      string `json:"imgprofile"`
 		Username        string `json:"username"`
 	}
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "json invalid"})
+	}
+	if len(body.Password) < 8 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "password must be at least 8 characters"})
+		return
+	}
+
 	if body.ConfirmPassword != body.Password {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "password do not match"})
 		return
 	}
-
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "no es un json"})
-	}
-
-	if c.Bind(&body) != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to ready body"})
+	if body.Fullname == "" || body.Email == "" || body.Password == "" || body.ConfirmPassword == "" || body.ImgProfile == "" || body.Username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "empty fields"})
 		return
 	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to hash the password"})
 		return
 	}
-	fmt.Println("Hash", string(hash))
-
-	fmt.Println("fullname: ", body.Fullname)
 
 	user := models.Users{Fullname: body.Fullname, Email: body.Email, Password: string(hash), ImgProfile: body.ImgProfile, Username: body.Username}
 
@@ -53,22 +54,39 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"message": "user created successfully", "user": user})
 
 }
 
+type LoginData struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginResponseOK struct {
+	Token string `json:"token"`
+}
+
+type LoginResponseFalse struct {
+	Error string `json:"error"`
+}
+
+// @Summary Login Function
+// @Description Verifica datos en la base de datos y devuelve un JWT en caso de éxito
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Success 200 {object} LoginResponseOK
+// @Success 400 {object} LoginResponseFalse
+// @Router /auth/login [post]
+// @Param data body LoginData true "datos del inicio de sesion"
 func Login(c *gin.Context) {
 	var body struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "no es estas mandando un json"})
-		return
-	}
-
-	if c.Bind(&body) != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read the body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "json invalid"})
 		return
 	}
 
@@ -104,6 +122,7 @@ func Login(c *gin.Context) {
 
 func Validate(c *gin.Context) {
 	user, _ := c.Get("user")
+	id := user.(models.Users).ID
 
-	c.JSON(http.StatusOK, gin.H{"message": user})
+	c.JSON(http.StatusOK, gin.H{"user": user, "id": id})
 }

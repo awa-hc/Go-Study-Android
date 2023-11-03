@@ -15,10 +15,13 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/login": {
+        "/auth/login": {
             "post": {
-                "description": "checks data in db and return",
+                "description": "Verifica datos en la base de datos y devuelve un JWT en caso de éxito",
                 "consumes": [
+                    "application/json"
+                ],
+                "produces": [
                     "application/json"
                 ],
                 "tags": [
@@ -27,12 +30,12 @@ const docTemplate = `{
                 "summary": "Login Function",
                 "parameters": [
                     {
-                        "description": "Datos del inicio de sesión",
+                        "description": "datos del inicio de sesion",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.LoginData"
+                            "$ref": "#/definitions/auth.LoginData"
                         }
                     }
                 ],
@@ -40,13 +43,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.LoginData"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.ErrorResponse"
+                            "$ref": "#/definitions/auth.LoginResponseOK"
                         }
                     }
                 }
@@ -54,21 +51,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handlers.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.LoginData": {
+        "auth.LoginData": {
             "type": "object",
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.LoginResponseOK": {
+            "type": "object",
+            "properties": {
+                "token": {
                     "type": "string"
                 }
             }

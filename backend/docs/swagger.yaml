@@ -1,15 +1,15 @@
 basePath: /
 definitions:
-  handlers.ErrorResponse:
-    properties:
-      error:
-        type: string
-    type: object
-  handlers.LoginData:
+  auth.LoginData:
     properties:
       email:
         type: string
       password:
+        type: string
+    type: object
+  auth.LoginResponseOK:
+    properties:
+      token:
         type: string
     type: object
 host: localhost:8080
@@ -19,27 +19,26 @@ info:
   title: tag Service Api
   version: "1.0"
 paths:
-  /login:
+  /auth/login:
     post:
       consumes:
       - application/json
-      description: checks data in db and return
+      description: Verifica datos en la base de datos y devuelve un JWT en caso de
+        éxito
       parameters:
-      - description: Datos del inicio de sesión
+      - description: datos del inicio de sesion
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/handlers.LoginData'
+          $ref: '#/definitions/auth.LoginData'
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.LoginData'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.ErrorResponse'
+            $ref: '#/definitions/auth.LoginResponseOK'
       summary: Login Function
       tags:
       - Users

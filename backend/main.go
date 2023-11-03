@@ -1,8 +1,16 @@
 package main
 
 import (
+	"os"
+	"os/exec"
+
 	auth "github.com/awa-hc/backend/api/Auth"
-	handlers "github.com/awa-hc/backend/api/handlers/Project"
+	projecthandler "github.com/awa-hc/backend/api/handlers/project"
+	taskhandler "github.com/awa-hc/backend/api/handlers/task"
+	taskprojecthandler "github.com/awa-hc/backend/api/handlers/taskproject"
+	userhandler "github.com/awa-hc/backend/api/handlers/user"
+	uprojecthandler "github.com/awa-hc/backend/api/handlers/userproject"
+
 	"github.com/awa-hc/backend/api/middleware"
 	_ "github.com/awa-hc/backend/docs"
 	"github.com/awa-hc/backend/initializers"
@@ -15,6 +23,13 @@ import (
 func init() {
 	initializers.LoadEnvVariables()
 	database.ConnectToDB()
+	clearscreen()
+}
+
+func clearscreen() {
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }
 
 // @title tag Service Api
@@ -35,8 +50,41 @@ func main() {
 	authGroup.POST("/login", auth.Login)
 	authGroup.GET("/validate", middleware.RequireAuth, auth.Validate)
 
+	userGroup := route.Group("/user")
+	{
+		userGroup.GET("/", userhandler.GetUsers)
+		userGroup.GET("/:id", userhandler.GetUser)
+	}
+
 	projectGroup := route.Group("/project")
-	projectGroup.POST("/create-project", middleware.RequireAuth, handlers.CreateProject)
+	projectGroup.Use(middleware.RequireAuth)
+	{
+		projectGroup.POST("/", projecthandler.CreateProject)
+		projectGroup.GET("/", projecthandler.GetProjects)
+		projectGroup.GET("/:id", projecthandler.GetProject)
+		projectGroup.DELETE("/:id", projecthandler.DeleteProject)
+	}
+
+	userprojecetGroup := route.Group("/userproject")
+	userprojecetGroup.Use(middleware.RequireAuth)
+	{
+		userprojecetGroup.GET("/:id", uprojecthandler.Getuserproject)
+	}
+
+	taskGroup := route.Group("/task")
+	taskGroup.Use(middleware.RequireAuth)
+	{
+		taskGroup.POST("/", taskhandler.CreateTask)
+		taskGroup.GET("/", taskhandler.GetTasks)
+		taskGroup.GET("/:id", taskhandler.GetTask)
+	}
+
+	taskprojectGroup := route.Group("/taskproject")
+	taskprojectGroup.Use(middleware.RequireAuth)
+	{
+		taskprojectGroup.GET("/:id", taskprojecthandler.GetTaskProject)
+
+	}
 
 	route.Run(":8080")
 
