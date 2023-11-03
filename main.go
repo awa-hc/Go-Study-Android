@@ -24,6 +24,7 @@ func init() {
 	initializers.LoadEnvVariables()
 	database.ConnectToDB()
 	clearscreen()
+
 }
 
 func clearscreen() {
@@ -38,6 +39,7 @@ func clearscreen() {
 // @host localhost:8080
 // @BasePath /
 func main() {
+	var port = os.Getenv("PORT")
 
 	route := gin.Default()
 
@@ -86,6 +88,6 @@ func main() {
 
 	}
 
-	route.Run(":8080")
+	route.Run(":" + port)
 
 }
