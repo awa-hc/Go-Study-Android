@@ -4,7 +4,7 @@ import (
 	"os"
 	"os/exec"
 
-	auth "github.com/awa-hc/backend/api/Auth"
+	auth "github.com/awa-hc/backend/api/auth"
 	projecthandler "github.com/awa-hc/backend/api/handlers/project"
 	taskhandler "github.com/awa-hc/backend/api/handlers/task"
 	taskprojecthandler "github.com/awa-hc/backend/api/handlers/taskproject"
