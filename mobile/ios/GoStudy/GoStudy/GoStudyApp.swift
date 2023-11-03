@@ -12,7 +12,7 @@ import SwiftUI
 struct GoStudyApp: App {
     var body: some Scene {
         WindowGroup {
-            StartPageView() 
+            HomePage()
         }
     }
 }

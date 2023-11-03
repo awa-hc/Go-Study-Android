@@ -19,69 +19,71 @@ struct LoginPageView: View {
     var body: some View {
         
         VStack {
-            Text("Iniciar Sesión")
-                .font(.largeTitle)
-                .padding()
             
-            TextField("Nombre de Usuario", text: $email)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
-            SecureField("Contraseña", text: $password)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
-            Button(action: {
-            login()
-            }) {
-                Text("Iniciar Sesión")
-                    .font(.title)
-                    .padding()
-                    .foregroundColor(.white)
-                    .background(Color.orange)
-                    .cornerRadius(10)
+            HStack{
+                
+                Text("Iniciar sesión")
+                    .font(.custom("Urbanist-Black", size:36))
+                    .fontWeight(.black)
+                    .padding(.bottom, 20)
+                Spacer()
             }
             
+            
+            .padding(.top, 100)
+            
+            TextField("Ingrese tu email", text: $email)
+                .padding()
+                .font(.custom("Urbanist-bold", size:15))
+                .background(Color(.systemGray6))
+                .cornerRadius(5.0)
+                .padding(.bottom, 20)
+            TextField("Ingrese tu Contraseña", text: $email)
+                .padding()
+                .font(.custom("Urbanist-bold", size: 15))
+                .background(Color(.systemGray6))
+                .cornerRadius(5.0)
+                .padding(.bottom, 20)
+            HStack {
+                Spacer()
+                Button(action: {
+                    print("Olvidó su contraseña? button tapped")
+                }) {
+                    Text("Olvidó su contraseña?")
+                        .font(.custom("Urbanist-Bold", size:17) )
+                        .foregroundStyle(Color.gray)
+                }
+            }
+            Button(action: {
+                print("login button")
+            }) {
+                Text("Ingresar")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(width: 331, height: 60)
+                    .background(Color.orange)
+                    .cornerRadius(15.0)
+            }.padding(.top, 20)
             Spacer()
+            HStack {
+                Text("No tienes cuenta?")
+                Button(action: {
+                    print("Regístrate ahora button tapped")
+                }) {
+                    Text("Regístrate ahora")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(Color.orange)
+                        .underline()
+                }
+            }
+            
+            
         }.navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: CustomBackButton())
-        .navigationBarTitle("Inicio de sesion", displayMode: .inline)
-        .padding()
+            .navigationBarItems(leading: CustomBackButton())
+            .navigationBarTitle("Inicio de sesion", displayMode: .inline)
+            .padding(30)
     }
-    
-    
-    func login() {
-        let url = URL(string: "http://localhost:8080/auth/login")
-        guard let url = url else {return}
-        
-        let credentials: [String: Any] = [
-            "email": email,
-            "password": password
-        ]
-        
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: credentials)
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.httpBody = jsonData
-            request.setValue("application/json", forHTTPHeaderField: "Content-type")
-            let task = URLSession.shared.dataTask(with: request) { data, response, error in
-                if let data = data {
-                    if let responseModel = try? JSONDecoder().decode(ResponseModel.self, from: data) {
-                        if let token = responseModel.token {
-                            jwtToken = jwtToken
-                            UserDefaults.standard.set(token, forKey: "jwtToken")
-                        }
-            }}}
-            task.resume()
-        } catch {
-            print("error al crear los datos json")
-        }
-
-        
-    }
-    
-    
 }
 
 struct CustomBackButton: View {
@@ -99,10 +101,7 @@ struct CustomBackButton: View {
 }
 
 
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginPageView()
-    }
+
+#Preview {
+    LoginPageView()
 }
-
-

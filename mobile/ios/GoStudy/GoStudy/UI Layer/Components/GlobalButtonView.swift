@@ -6,6 +6,3 @@
 //
 
 import SwiftUI
- struct GlobalButtonView: view {
-     
- }
